@@ -58,10 +58,6 @@ objs = {
 for (var i = 0; i < 2; i++) {
     gl[i].bindBuffer(gl[i].ARRAY_BUFFER, objs["square"].VBO[i]);
     gl[i].bindBuffer(gl[i].ELEMENT_ARRAY_BUFFER, objs["square"].IBO[i]);
-    if (i == 0) gl[i].bindTexture(gl[i].TEXTURE_2D, shapeTextures[i]["green"]);
-    else gl[i].bindTexture(gl[i].TEXTURE_2D, shapeTextures[i]["red"]);
-    gl[i].activeTexture(gl[i].TEXTURE0);
-    gl[i].uniform1i(programInfo[i].samplerUnifLoc, 0);
     gl[i].vertexAttribPointer(
         programInfo[i].posAttribLoc, 3, gl[i].FLOAT, gl[i].FALSE, 
         5 * Float32Array.BYTES_PER_ELEMENT, 0
