@@ -16,34 +16,32 @@ var width = racingTrack[0].length
 var height = racingTrack.length
 
 // Defining initial state of two players
-var player = [
-    {
-        x: 4.0,
-        y: 1.3,
-        vel: 0.0,
-        dir: 0.0,
-        left: false,
-        right: false,
-        break: false,
-        accel: false,
-        lost: false,
-        firstCell: true,
-        laps: 0
-    },
-    {
-        x: 4.0,
-        y: 1.6,
-        vel: 0.0,
-        dir: 0.0,
-        left: false,
-        right: false,
-        break: false,
-        accel: false,
-        lost: false,
-        firstCell: true,
-        laps: 0
+//   other parameters are initialized in initPlayer function
+var player = [ { wins: 0 }, { wins: 0 } ];
+
+// Counter until game restart
+var RESTART_COUNTER_VALUE = 100;
+var restartCounter;
+
+// Initialize player parameters for the start of the race
+var initPlayers = function() {
+    player[0].y = 1.3;
+    player[1].y = 1.6;
+    for (var i = 0; i < 2; i++) {
+        player[i].x = 4.0;
+        player[i].vel = 0.0;
+        player[i].dir = 0.0;
+        player[i].left = false;
+        player[i].right = false;
+        player[i].break = false;
+        player[i].accel = false;
+        player[i].lost = false;
+        player[i].firstCell = true;
+        player[i].laps = 0;
     }
-]
+};
+// Init now
+initPlayers();
 
 // Laps to win
 var LAPS_GOAL = 5;
@@ -73,10 +71,10 @@ document.onkeyup = function(event) {
 };
 
 // Function updating info lable to display number 
-//   of laps completed by both players
+//   of wins and laps completed by both players
 var updateLabel = function() {
     label.innerHTML = "(" + (player[0].laps + 1) + "/" + LAPS_GOAL + 
-        ") P1 vs P2 (" + 
+        ") P1 " + player[0].wins + " : " + player[1].wins + " P2 (" + 
         (player[1].laps + 1) + "/" + LAPS_GOAL + ")";
 }
 // Update now
@@ -208,10 +206,26 @@ var mainLoop = function(){
             }
         }
         // If the game is over, displey the info message
-        if (player[0].lost && player[1].lost) label.innerHTML = "Both players lose!";
-        else if (player[0].lost) label.innerHTML = "Player 2 won!";
-        else if (player[1].lost) label.innerHTML = "Player 1 won!";
+        if (player[0].lost && player[1].lost) {
+            restartCounter = RESTART_COUNTER_VALUE;
+            label.innerHTML = "Both players lose!";
+        } else if (player[0].lost) {
+            player[1].wins++;
+            restartCounter = RESTART_COUNTER_VALUE;
+            label.innerHTML = "Player 2 won!";
+        } else if (player[1].lost) {
+            player[0].wins++;
+            restartCounter = RESTART_COUNTER_VALUE;
+            label.innerHTML = "Player 1 won!";
+        }
         drawGame();   
+    } else {
+        // When game is over, drecrease restart counter 
+        // When it gets to 0, restart player info
+        if (--restartCounter <= 0) {
+            initPlayers();
+            updateLabel();
+        }
     }
     window.requestAnimationFrame(mainLoop);
 };
